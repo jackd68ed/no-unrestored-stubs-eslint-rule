@@ -8,9 +8,8 @@
 // Requirements
 //------------------------------------------------------------------------------
 
-const rule = require("../../../lib/rules/no-unrestored-stubs"),
-  RuleTester = require("eslint").RuleTester;
-
+const rule = require("../../../lib/rules/no-unrestored-stubs");
+const RuleTester = require("eslint").RuleTester;
 
 //------------------------------------------------------------------------------
 // Tests
@@ -19,17 +18,74 @@ const rule = require("../../../lib/rules/no-unrestored-stubs"),
 const ruleTester = new RuleTester();
 ruleTester.run("no-unrestored-stubs", rule, {
   valid: [
-    // give me some code that won't trigger a warning
+    // Restoring the stub directly
     {
-      code: "const myStub = sinon.stub(myObject, \"method\")\nmyStub.restore()",
-      errors: [{ message: "Stubs must be restored", type: "problem" }],
+      code: /* js */ `
+        var myStub = sinon.stub(myObject, "method");
+        myStub.restore();
+      `.trim(),
+    },
+    {
+      code: /* js */ `
+        var myStub = sinon.stub(myObject, "method");
+
+        after(function() {
+          myStub.restore();
+        })
+      `.trim(),
+    },
+    {
+      code: /* js */ `
+        var myStub = sinon.stub(myObject, "method");
+
+        afterEach(function() {
+          myStub.restore();
+        })
+      `.trim(),
+    },
+
+    // Using a sandbox
+    {
+      code: /* js */ `
+        var sandbox = createSandbox();
+        var myStub = sandbox.stub(myObject, "method");
+
+        sandbox.restore();
+      `.trim(),
+    },
+    {
+      code: /* js */ `
+        var sandbox = createSandbox();
+        var myStub = sandbox.stub(myObject, "method");
+
+        after(function() {
+          sandbox.restore();
+        })
+      `.trim(),
+    },
+    {
+      code: /* js */ `
+        var sandbox = createSandbox();
+        var myStub = sandbox.stub(myObject, "method");
+
+        afterEach(function() {
+          sandbox.restore();
+        })
+      `.trim(),
     },
   ],
 
   invalid: [
     {
-      code: "const myStub = sinon.stub(myObject, \"method\")",
-      errors: [{ message: "Stubs must be restored", type: "problem" }],
+      code: /* js */ `var myStub = sinon.stub(myObject, "method");`,
+      errors: [{ message: "Stubs must be restored", type: "Identifier" }],
+    },
+    {
+      code: /* js */ `
+        var sandbox = createSandbox();
+        var myStub = sandbox.stub(myObject, "method");
+      `.trim(),
+      errors: [{ message: "Stubs must be restored", type: "Identifier" }],
     },
   ],
 });
