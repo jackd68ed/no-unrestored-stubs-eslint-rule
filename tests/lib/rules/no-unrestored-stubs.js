@@ -7,6 +7,8 @@
 //------------------------------------------------------------------------------
 // Requirements
 //------------------------------------------------------------------------------
+const fs = require("fs");
+const path = require("path");
 
 const rule = require("../../../lib/rules/no-unrestored-stubs");
 const RuleTester = require("eslint").RuleTester;
@@ -14,6 +16,11 @@ const RuleTester = require("eslint").RuleTester;
 //------------------------------------------------------------------------------
 // Tests
 //------------------------------------------------------------------------------
+
+const example1 = fs.readFileSync(
+  path.join(__dirname, "fixtures/example1.ts"),
+  "utf8"
+);
 
 const ruleTester = new RuleTester({
   // eslint-disable-next-line node/no-unpublished-require
@@ -104,6 +111,12 @@ ruleTester.run("no-unrestored-stubs", rule, {
           sandbox.restore();
         })
       `.trim(),
+    },
+
+    // Fixture files
+    {
+      code: example1,
+      name: "Fixture: example1",
     },
   ],
 
