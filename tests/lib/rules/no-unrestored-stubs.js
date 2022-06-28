@@ -142,6 +142,22 @@ ruleTester.run("no-unrestored-stubs", rule, {
     {
       code: /* typescript */ `
         const sandbox = createSandbox();
+        const myMock = sandbox.mock(myObject);
+
+        sandbox.restore();
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const sandbox = createSandbox();
+        sandbox.mock(myObject);
+
+        sandbox.restore();
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const sandbox = createSandbox();
         const myStub = sandbox.stub(myObject, "method");
 
         after(() => {
@@ -152,7 +168,27 @@ ruleTester.run("no-unrestored-stubs", rule, {
     {
       code: /* typescript */ `
         const sandbox = createSandbox();
+        const myMock = sandbox.mock(myObject);
+
+        after(() => {
+          sandbox.restore();
+        })
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const sandbox = createSandbox();
         const myStub = sandbox.stub(myObject, "method");
+
+        afterEach(() => {
+          sandbox.restore();
+        })
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const sandbox = createSandbox();
+        const myMock = sandbox.mock(myObject);
 
         afterEach(() => {
           sandbox.restore();
@@ -212,6 +248,20 @@ ruleTester.run("no-unrestored-stubs", rule, {
       errors: [
         {
           message: "Stubs must be restored",
+          type: "Identifier",
+          line: 2,
+          column: 32,
+        },
+      ],
+    },
+    {
+      code: /* typescript */ `
+        const sandbox = createSandbox();
+        const myMock = sandbox.mock(myObject);
+      `.trim(),
+      errors: [
+        {
+          message: "Mocks must be restored",
           type: "Identifier",
           line: 2,
           column: 32,
