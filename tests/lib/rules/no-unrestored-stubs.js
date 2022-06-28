@@ -78,14 +78,14 @@ ruleTester.run("no-unrestored-stubs", rule, {
   invalid: [
     {
       code: /* js */ `var myStub = sinon.stub(myObject, "method");`,
-      errors: [{ message: "Stubs must be restored", type: "Identifier" }],
+      errors: [{ message: "Stubs must be restored", type: "VariableDeclarator" }],
     },
     {
       code: /* js */ `
         var sandbox = createSandbox();
         var myStub = sandbox.stub(myObject, "method");
       `.trim(),
-      errors: [{ message: "Stubs must be restored", type: "Identifier" }],
+      errors: [{ message: "Stubs must be restored", type: "VariableDeclarator" }],
     },
   ],
 });
