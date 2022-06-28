@@ -43,6 +43,20 @@ ruleTester.run("no-unrestored-stubs", rule, {
         })
       `.trim(),
     },
+    {
+      code: /* js */ `
+        var myStub = sinon.stub(myObject, "method");
+
+        beforeEach(function() {
+          myStub.reset();
+          myStub.resolves({});
+        });
+
+        afterEach(function() {
+          myStub.restore();
+        })
+      `.trim(),
+    },
 
     // Using a sandbox
     {
