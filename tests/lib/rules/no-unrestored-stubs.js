@@ -113,6 +113,17 @@ ruleTester.run("no-unrestored-stubs", rule, {
       `.trim(),
     },
 
+    // Calling stub with no args
+    {
+      code: /* typescript */ `const myStub = sinon.stub()`,
+    },
+    {
+      code: /* typescript */ `
+        const sandbox = createSandbox();
+        const myStub = sandbox.stub();
+      `.trim(),
+    },
+
     // Fixture files
     {
       code: example1,
