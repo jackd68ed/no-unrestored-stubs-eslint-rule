@@ -29,11 +29,17 @@ const ruleTester = new RuleTester({
 
 ruleTester.run("no-unrestored-stubs", rule, {
   valid: [
-    // Restoring the stub directly
+    // Restoring the stub/mock directly
     {
       code: /* typescript */ `
         const myStub = sinon.stub(myObject, "method");
         myStub.restore();
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const myMock = sinon.mock(myObject);
+        myMock.restore();
       `.trim(),
     },
     {
@@ -47,10 +53,28 @@ ruleTester.run("no-unrestored-stubs", rule, {
     },
     {
       code: /* typescript */ `
+        const myMock = sinon.mock(myObject);
+
+        after(() => {
+          myMock.restore();
+        })
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
         const myStub = sinon.stub(myObject, "method");
 
         afterEach(() => {
           myStub.restore();
+        })
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const myMock = sinon.mock(myObject);
+
+        afterEach(() => {
+          myMock.restore();
         })
       `.trim(),
     },
@@ -70,11 +94,34 @@ ruleTester.run("no-unrestored-stubs", rule, {
     },
     {
       code: /* typescript */ `
+        const myMock = sinon.mock(myObject);
+
+        beforeEach(() => {
+          myMock.reset();
+          myMock.resolves({});
+        });
+
+        afterEach(() => {
+          myMock.restore();
+        })
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
         const myStub = sinon.stub(myObject, "method");
         myStub.reset();
         myStub.callsFake(() => {});
 
         myStub.restore();
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const myMock = sinon.mock(myObject);
+        myMock.reset();
+        myMock.callsFake(() => {});
+
+        myMock.restore();
       `.trim(),
     },
 
@@ -113,9 +160,12 @@ ruleTester.run("no-unrestored-stubs", rule, {
       `.trim(),
     },
 
-    // Calling stub with no args
+    // Calling stub/mock with no args
     {
       code: /* typescript */ `const myStub = sinon.stub()`,
+    },
+    {
+      code: /* typescript */ `const myMock = sinon.mock()`,
     },
     {
       code: /* typescript */ `
@@ -137,6 +187,17 @@ ruleTester.run("no-unrestored-stubs", rule, {
       errors: [
         {
           message: "Stubs must be restored",
+          type: "Identifier",
+          line: 1,
+          column: 7,
+        },
+      ],
+    },
+    {
+      code: /* typescript */ `const myMock = sinon.mock(myObject);`,
+      errors: [
+        {
+          message: "Mocks must be restored",
           type: "Identifier",
           line: 1,
           column: 7,
