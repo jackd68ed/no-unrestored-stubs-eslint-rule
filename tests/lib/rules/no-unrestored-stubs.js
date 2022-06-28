@@ -15,79 +15,92 @@ const RuleTester = require("eslint").RuleTester;
 // Tests
 //------------------------------------------------------------------------------
 
-const ruleTester = new RuleTester();
+const ruleTester = new RuleTester({
+  // eslint-disable-next-line node/no-unpublished-require
+  parser: require.resolve("@typescript-eslint/parser"),
+});
+
 ruleTester.run("no-unrestored-stubs", rule, {
   valid: [
     // Restoring the stub directly
     {
-      code: /* js */ `
-        var myStub = sinon.stub(myObject, "method");
+      code: /* typescript */ `
+        const myStub = sinon.stub(myObject, "method");
         myStub.restore();
       `.trim(),
     },
     {
-      code: /* js */ `
-        var myStub = sinon.stub(myObject, "method");
+      code: /* typescript */ `
+        const myStub = sinon.stub(myObject, "method");
 
-        after(function() {
+        after(() => {
           myStub.restore();
         })
       `.trim(),
     },
     {
-      code: /* js */ `
-        var myStub = sinon.stub(myObject, "method");
+      code: /* typescript */ `
+        const myStub = sinon.stub(myObject, "method");
 
-        afterEach(function() {
+        afterEach(() => {
           myStub.restore();
         })
       `.trim(),
     },
     {
-      code: /* js */ `
-        var myStub = sinon.stub(myObject, "method");
+      code: /* typescript */ `
+        const myStub = sinon.stub(myObject, "method");
 
-        beforeEach(function() {
+        beforeEach(() => {
           myStub.reset();
           myStub.resolves({});
         });
 
-        afterEach(function() {
+        afterEach(() => {
           myStub.restore();
         })
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const myStub = sinon.stub(myObject, "method");
+        myStub.reset();
+        myStub.callsFake(() => {});
+
+        myStub.restore();
       `.trim(),
     },
 
     // Using a sandbox
     {
-      code: /* js */ `
-        var sandbox = createSandbox();
+      code: /* typescript */ `
+        const sandbox = createSandbox();
       `.trim(),
     },
     {
-      code: /* js */ `
-        var sandbox = createSandbox();
-        var myStub = sandbox.stub(myObject, "method");
+      code: /* typescript */ `
+        const sandbox = createSandbox();
+        const myStub = sandbox.stub(myObject, "method");
 
         sandbox.restore();
       `.trim(),
     },
     {
-      code: /* js */ `
-        var sandbox = createSandbox();
-        var myStub = sandbox.stub(myObject, "method");
+      code: /* typescript */ `
+        const sandbox = createSandbox();
+        const myStub = sandbox.stub(myObject, "method");
 
-        after(function() {
+        after(() => {
           sandbox.restore();
         })
       `.trim(),
     },
     {
-      code: /* js */ `
-        var sandbox = createSandbox();
-        var myStub = sandbox.stub(myObject, "method");
+      code: /* typescript */ `
+        const sandbox = createSandbox();
+        const myStub = sandbox.stub(myObject, "method");
 
-        afterEach(function() {
+        afterEach(() => {
           sandbox.restore();
         })
       `.trim(),
@@ -96,27 +109,27 @@ ruleTester.run("no-unrestored-stubs", rule, {
 
   invalid: [
     {
-      code: /* js */ `var myStub = sinon.stub(myObject, "method");`,
+      code: /* typescript */ `const myStub = sinon.stub(myObject, "method");`,
       errors: [
         {
           message: "Stubs must be restored",
           type: "Identifier",
           line: 1,
-          column: 5,
+          column: 7,
         },
       ],
     },
     {
-      code: /* js */ `
-        var sandbox = createSandbox();
-        var myStub = sandbox.stub(myObject, "method");
+      code: /* typescript */ `
+        const sandbox = createSandbox();
+        const myStub = sandbox.stub(myObject, "method");
       `.trim(),
       errors: [
         {
           message: "Stubs must be restored",
           type: "Identifier",
           line: 2,
-          column: 30,
+          column: 32,
         },
       ],
     },
