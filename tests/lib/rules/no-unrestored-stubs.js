@@ -52,6 +52,7 @@ ruleTester.run("no-unrestored-stubs", rule, {
 
         sandbox.restore();
       `.trim(),
+      only: true
     },
     {
       code: /* js */ `
