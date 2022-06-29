@@ -27,7 +27,19 @@ ruleTester.run("no-unrestored-stubs", rule, {
     },
     {
       code: /* typescript */ `
+        const myStub = Sinon.stub(myObject, "method");
+        myStub.restore();
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
         const myMock = sinon.mock(myObject);
+        myMock.restore();
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const myMock = Sinon.mock(myObject);
         myMock.restore();
       `.trim(),
     },
@@ -213,7 +225,29 @@ ruleTester.run("no-unrestored-stubs", rule, {
       ],
     },
     {
+      code: /* typescript */ `const myStub = Sinon.stub(myObject, "method");`,
+      errors: [
+        {
+          message: "Stubs must be restored",
+          type: "Identifier",
+          line: 1,
+          column: 7,
+        },
+      ],
+    },
+    {
       code: /* typescript */ `const myMock = sinon.mock(myObject);`,
+      errors: [
+        {
+          message: "Mocks must be restored",
+          type: "Identifier",
+          line: 1,
+          column: 7,
+        },
+      ],
+    },
+    {
+      code: /* typescript */ `const myMock = Sinon.mock(myObject);`,
       errors: [
         {
           message: "Mocks must be restored",
