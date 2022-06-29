@@ -32,9 +32,12 @@ ruleTester.run("no-unrestored-stubs", rule, {
     // Restoring the stub/mock directly
     {
       code: /* typescript */ `
+        import * as sinon from "sinon";
+
         const myStub = sinon.stub(myObject, "method");
         myStub.restore();
       `.trim(),
+      only: true,
     },
     {
       code: /* typescript */ `
