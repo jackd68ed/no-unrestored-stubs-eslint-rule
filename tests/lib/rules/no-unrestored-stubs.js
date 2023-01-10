@@ -151,6 +151,14 @@ ruleTester.run("no-unrestored-stubs", rule, {
     {
       code: /* typescript */ `
         const sandbox = createSandbox();
+        const myMock = sandbox.mock(myObject);
+
+        sandbox.verifyAndRestore();
+      `.trim(),
+    },
+    {
+      code: /* typescript */ `
+        const sandbox = createSandbox();
         sandbox.mock(myObject);
 
         sandbox.restore();
